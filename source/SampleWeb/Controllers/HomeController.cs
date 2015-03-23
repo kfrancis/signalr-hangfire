@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SampleCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -25,6 +26,22 @@ namespace SampleWeb.Controllers
             ViewBag.Message = "Your contact page.";
 
             return View();
+        }
+
+        [HttpPost]
+        public ActionResult ShortTask(int taskId)
+        {
+            TaskRunner.Queue(taskId);
+
+            return Json(true, JsonRequestBehavior.DenyGet);
+        }
+
+        [HttpPost]
+        public ActionResult LongTask(int taskId)
+        {
+            TaskRunner.QueueLong(taskId);
+
+            return Json(true, JsonRequestBehavior.DenyGet);
         }
     }
 }

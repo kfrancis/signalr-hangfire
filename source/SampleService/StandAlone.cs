@@ -1,30 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Configuration.Abstractions;
-using System.Data;
-using System.Diagnostics;
 using System.Linq;
-using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Owin.Hosting;
 
 namespace SampleService
 {
-    public partial class Service1 : ServiceBase
+    /// <summary>
+    /// Class used when debugging
+    /// </summary>
+    public class StandAlone
     {
         /// <summary>
         /// Instance of the OWIN server
         /// </summary>
         private IDisposable _appServer;
 
-        public Service1()
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public StandAlone()
         {
-            InitializeComponent();
         }
 
-        protected override void OnStart(string[] args)
+        internal void Start()
         {
             StartOptions startOptions = new StartOptions();
             string webAppPort = ConfigurationManager.Instance.AppSettings.AppSetting<string>("Hangfire.WebAppPort", () => "9095");
@@ -35,7 +36,7 @@ namespace SampleService
             _appServer = WebApp.Start<Startup>(startOptions);
         }
 
-        protected override void OnStop()
+        internal void Stop()
         {
             if (_appServer != null) { _appServer.Dispose(); }
         }

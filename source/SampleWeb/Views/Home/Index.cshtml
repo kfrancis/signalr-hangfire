@@ -3,7 +3,7 @@
 }
 
 @section head {
-<link href="~/Content/pnotify.custom.min.css" rel="stylesheet" />
+    <link href="~/Content/pnotify.custom.min.css" rel="stylesheet" />
 }
 
 <div class="jumbotron">
@@ -34,17 +34,50 @@
     </div>
     <input type="text" id="message" />
     <a id="messageBtn" class="btn btn-default" href="#">Message</a>
+    <hr />
+    <a id="shortTaskBtn" class="btn btn-default" href="#">Short</a>
+    <a id="longTaskBtn" class="btn btn-default" href="#">Long</a>
 </div>
 
 @section scripts {
     <script src="~/Scripts/pnotify.custom.min.js"></script>
-    <script src="~/Scripts/jquery.signalR-2.1.2.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
     <script src="~/signalr/hubs"></script>
     <script type="text/javascript">
         $(function () {
-            var notificationHub = $.connection.notificationHub;
+            $("#shortTaskBtn").click(function () {
+                debugger;
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("ShortTask","Home")',
+                    data: {
+                        taskId: $("#message").val()
+                    },
+                    success: function (data) {
+
+                    }
+                });
+            });
+
+            $("#longTaskBtn").click(function () {
+                debugger;
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("LongTask","Home")',
+                    data: {
+                        taskId: $("#message").val()
+                    },
+                    success: function (data) {
+
+                    }
+                });
+            });
+
+            debugger;
+            var notificationHub = $.connection.notificationHubProxy;
 
             notificationHub.client.sendMessage = function (context) {
+                debugger;
                 new PNotify({
                     title: 'Message',
                     text: context
@@ -53,6 +86,7 @@
 
             $.connection.hub.start().done(function () {
                 $("#messageBtn").click(function () {
+                    debugger;
                     notificationHub.server.sendMessage($("#message").val());
                 });
             });

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using Microsoft.AspNet.SignalR;
 
-namespace SampleWeb
+namespace SampleCore
 {
     public class NotificationHub : Hub
     {
