@@ -2,6 +2,10 @@
     ViewBag.Title = "Home Page";
 }
 
+@section head {
+<link href="~/Content/pnotify.custom.min.css" rel="stylesheet" />
+}
+
 <div class="jumbotron">
     <h1>ASP.NET</h1>
     <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
@@ -28,4 +32,30 @@
         <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
         <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
     </div>
+    <input type="text" id="message" />
+    <a id="messageBtn" class="btn btn-default" href="#">Message</a>
 </div>
+
+@section scripts {
+    <script src="~/Scripts/pnotify.custom.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.1.2.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+    <script type="text/javascript">
+        $(function () {
+            var notificationHub = $.connection.notificationHub;
+
+            notificationHub.client.sendMessage = function (context) {
+                new PNotify({
+                    title: 'Message',
+                    text: context
+                });
+            };
+
+            $.connection.hub.start().done(function () {
+                $("#messageBtn").click(function () {
+                    notificationHub.server.sendMessage($("#message").val());
+                });
+            });
+        });
+    </script>
+}
