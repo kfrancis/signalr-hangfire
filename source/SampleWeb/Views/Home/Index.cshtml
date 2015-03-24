@@ -13,30 +13,23 @@
 </div>
 
 <div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
+    <div class="col-md-6">
+        <h2>Queue Tasks</h2>
+        <p>The following will queue a background task which will then notify all clients when the task is run by Hangfire</p>
         <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
+            <input type="text" id="taskIdTb" />
+            <a id="shortTaskBtn" class="btn btn-default" href="#">Short</a>
+            <a id="longTaskBtn" class="btn btn-default" href="#">Long</a>
         </p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
     </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
+    <div class="col-md-6">
+        <h2>Test</h2>
+        <p>The following will send a normal SignalR message to all clients which will be notified using Pines Notify.</p>
+        <p>
+            <input type="text" id="messageTb" />
+            <a id="messageBtn" class="btn btn-default" href="#">Message</a>
+        </p>
     </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
-    <input type="text" id="message" />
-    <a id="messageBtn" class="btn btn-default" href="#">Message</a>
-    <hr />
-    <a id="shortTaskBtn" class="btn btn-default" href="#">Short</a>
-    <a id="longTaskBtn" class="btn btn-default" href="#">Long</a>
 </div>
 
 @section scripts {
@@ -45,39 +38,40 @@
     <script src="~/signalr/hubs"></script>
     <script type="text/javascript">
         $(function () {
-            $("#shortTaskBtn").click(function () {
-                debugger;
+
+            $("#shortTaskBtn").click(function (e) {
+                e.preventDefault();
                 $.ajax({
                     type: "POST",
                     url: '@Url.Action("ShortTask","Home")',
                     data: {
-                        taskId: $("#message").val()
-                    },
-                    success: function (data) {
-
+                        taskId: $("#taskIdTb").val()
                     }
                 });
+
+                // clear
+                $("#taskIdTb").val("");
             });
 
-            $("#longTaskBtn").click(function () {
-                debugger;
+            $("#longTaskBtn").click(function (e) {
+                e.preventDefault();
                 $.ajax({
                     type: "POST",
                     url: '@Url.Action("LongTask","Home")',
                     data: {
-                        taskId: $("#message").val()
-                    },
-                    success: function (data) {
-
+                        taskId: $("#taskIdTb").val()
                     }
                 });
+
+                // clear
+                $("#taskIdTb").val("");
             });
 
-            debugger;
-            var notificationHub = $.connection.notificationHubProxy;
+            // As we've properly loaded the hub containing assembly, the following code should work as no proxy is needed.
+            var notificationHub = $.connection.notificationHub;
 
             notificationHub.client.sendMessage = function (context) {
-                debugger;
+                // When this function is called, throw the message up using Pines Notify (PNotify)
                 new PNotify({
                     title: 'Message',
                     text: context
@@ -86,8 +80,9 @@
 
             $.connection.hub.start().done(function () {
                 $("#messageBtn").click(function () {
-                    debugger;
-                    notificationHub.server.sendMessage($("#message").val());
+                    notificationHub.server.sendMessage($("#messageTb").val());
+
+                    $("#messageTb").val("");
                 });
             });
         });
